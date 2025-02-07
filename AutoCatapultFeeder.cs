@@ -4,7 +4,6 @@
  * Full legal terms can be found at https://game4freak.io/eula/
  */
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,13 +11,12 @@ using UnityEngine;
 namespace Oxide.Plugins
 {
     [Info("Auto Catapult Feeder", "VisEntities", "1.0.0")]
-    [Description(" ")]
+    [Description("Automatically refills catapults with ammo from a linked stash.")]
     public class AutoCatapultFeeder : RustPlugin
     {
         #region Fields
 
         private static AutoCatapultFeeder _plugin;
-        private static Configuration _config;
 
         private static readonly Vector3 _stashPosition = new Vector3(-1.25f, 0.8f, 0.1f);
         private static readonly Vector3 _stashRotation = new Vector3(90f, 0f, 90f);
@@ -34,58 +32,6 @@ namespace Oxide.Plugins
         };
 
         #endregion Fields
-
-        #region Configuration
-
-        private class Configuration
-        {
-            [JsonProperty("Version")]
-            public string Version { get; set; }
-        }
-
-        protected override void LoadConfig()
-        {
-            base.LoadConfig();
-            _config = Config.ReadObject<Configuration>();
-
-            if (string.Compare(_config.Version, Version.ToString()) < 0)
-                UpdateConfig();
-
-            SaveConfig();
-        }
-
-        protected override void LoadDefaultConfig()
-        {
-            _config = GetDefaultConfig();
-        }
-
-        protected override void SaveConfig()
-        {
-            Config.WriteObject(_config, true);
-        }
-
-        private void UpdateConfig()
-        {
-            PrintWarning("Config changes detected! Updating...");
-
-            Configuration defaultConfig = GetDefaultConfig();
-
-            if (string.Compare(_config.Version, "1.0.0") < 0)
-                _config = defaultConfig;
-
-            PrintWarning("Config update complete! Updated from version " + _config.Version + " to " + Version.ToString());
-            _config.Version = Version.ToString();
-        }
-
-        private Configuration GetDefaultConfig()
-        {
-            return new Configuration
-            {
-                Version = Version.ToString(),
-            };
-        }
-
-        #endregion Configuration
 
         #region Oxide Hooks
 
@@ -106,7 +52,6 @@ namespace Oxide.Plugins
                     stash.Kill();  
             }
 
-            _config = null;
             _plugin = null;
         }
 
