@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("Auto Catapult Feeder", "VisEntities", "1.0.0")]
+    [Info("Auto Catapult Feeder", "VisEntities", "1.0.1")]
     [Description("Automatically refills catapults with ammo from a linked stash.")]
     public class AutoCatapultFeeder : RustPlugin
     {
@@ -61,7 +61,7 @@ namespace Oxide.Plugins
             {
                 if (catapult != null && !HasStash(catapult))
                 {
-                    SpawnStash(catapult);
+                    AttachStash(catapult);
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace Oxide.Plugins
         {
             if (catapult != null && !HasStash(catapult))
             {
-                SpawnStash(catapult);
+                AttachStash(catapult);
             }
         }
 
@@ -98,11 +98,23 @@ namespace Oxide.Plugins
             }
         }
 
+        private object CanHideStash(BasePlayer player, StashContainer stash)
+        {
+            if (player == null || stash == null)
+                return null;
+
+            BaseEntity parent = stash.GetParentEntity();
+            if (parent != null && parent is Catapult)
+                return true;
+
+            return null;
+        }
+
         #endregion Oxide Hooks
 
         #region Stash Setup
 
-        private StashContainer SpawnStash(Catapult catapult)
+        private StashContainer AttachStash(Catapult catapult)
         {
             StashContainer stash = GameManager.server.CreateEntity(PREFAB_STASH, _stashPosition, Quaternion.Euler(_stashRotation)) as StashContainer;
             if (stash == null)
